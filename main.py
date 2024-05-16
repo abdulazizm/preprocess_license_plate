@@ -1,7 +1,10 @@
+import os
+import sys
+from math import sqrt
+
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-from math import sqrt
 
 class PreprocessVehicleLicensePlate:
     def __init__(self):
@@ -118,31 +121,45 @@ class PreprocessVehicleLicensePlate:
         return imgContour, warped  # Change - also return drawn image
 
 
-def main():
-    image = cv2.imread('4.jpg')
-    preprocess_obj = PreprocessVehicleLicensePlate()
-    imgHighContrast, imgBlur, imgBinary, imgCanny, imgDial, imgContour, warped = preprocess_obj.run(image)
+def main(image_filepath, display_out):
+    print("Checking image filepath")
+    if os.path.exists(image_filepath):
+        print("Image Found")
+        image = cv2.imread(image_filepath)
+        preprocess_obj = PreprocessVehicleLicensePlate()
+        imgHighContrast, imgBlur, imgBinary, imgCanny, imgDial, imgContour, warped = preprocess_obj.run(image)
+        print("Done processing")
 
-    titles = ['Original', 'Contrast', 'Blur', 'Binary', 'Canny', 'Dilate', 'Contours', 'Warped']  # Change - also show warped image
-    images = [image[...,::-1],  imgHighContrast[...,::-1], imgBlur, imgBinary, imgCanny, imgDial, cv2.cvtColor(imgContour, cv2.COLOR_BGR2RGB), cv2.cvtColor(warped, cv2.COLOR_BGR2RGB)]  # Change
+        if display_out:
+            titles = ['Original', 'Contrast', 'Blur', 'Binary', 'Canny', 'Dilate', 'Contours', 'Warped']  # Change - also show warped image
+            images = [image[...,::-1],  imgHighContrast[...,::-1], imgBlur, imgBinary, imgCanny, imgDial, cv2.cvtColor(imgContour, cv2.COLOR_BGR2RGB), cv2.cvtColor(warped, cv2.COLOR_BGR2RGB)]  # Change
 
-    # Change - Also show contour drawn image + warped image
-    for i in range(6):
-        plt.subplot(3, 3, i+1)
-        plt.imshow(images[i], cmap='gray')
-        plt.title(titles[i])
+            # Change - Also show contour drawn image + warped image
+            for i in range(6):
+                plt.subplot(3, 3, i+1)
+                plt.imshow(images[i], cmap='gray')
+                plt.title(titles[i])
 
-    if images[-2] is not None:
-        plt.subplot(3, 3, 7)
-        plt.imshow(images[-2])
-        plt.title(titles[-2])
+            if images[-2] is not None:
+                plt.subplot(3, 3, 7)
+                plt.imshow(images[-2])
+                plt.title(titles[-2])
 
-    if images[-1] is not None:
-        plt.subplot(3, 3, 9)
-        plt.imshow(images[-1])
-        plt.title(titles[-1])
+            if images[-1] is not None:
+                plt.subplot(3, 3, 9)
+                plt.imshow(images[-1])
+                plt.title(titles[-1])
 
-    plt.show()
+            plt.show()
+    else:
+        print("Image does not exist. Please check file path provided. Try again with absolute path.")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print(f"Usage:\n python {sys.argv[0]} /path/to/image.jpg --display\n  or  \n python {sys.argv[0]} /path/to/image.jpg")
+        exit(0)
+
+    if len(sys.argv) >= 3 and sys.argv[2] == "--display":
+        main(sys.argv[1], True)
+    else:
+        main(sys.argv[1], False)
