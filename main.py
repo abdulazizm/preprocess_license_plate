@@ -44,7 +44,7 @@ class PreprocessVehicleLicensePlate:
         # imgThres =  cv2.morphologyEx(imgDial, cv2.MORPH_OPEN, self.kernel)
         
         #9: get contours and do perspective transform
-        imgContour, warped = self.getWarpedImage(imgDial, image)
+        imgContour, warped = self.getWarpedImage(imgDial, imgHighContrast)
 
         return imgHighContrast, imgBlur, imgBinary, imgCanny, imgDial, imgContour, warped
 
